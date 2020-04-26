@@ -22,6 +22,9 @@ CREATE TABLE employee (
     role_id INTEGER NOT NULL,
     manager_id INTEGER
 );
+
+INSERT INTO department (id, name)
+VALUES (1, "James")
     
 
 -- ID, FIRST NAME, LAST NAME, TITLE, DEPARTMENT, SALARY, MANAGER

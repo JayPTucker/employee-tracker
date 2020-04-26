@@ -57,8 +57,7 @@ function loadIntro() {
 }
 
 function loadMainMenu() {
-    inquirer
-        .prompt({
+    inquirer.prompt({
             name: "action",
             type: "list",
             message: "What would you like to do?",
@@ -75,12 +74,15 @@ function loadMainMenu() {
         }).then(function(choice) {
             switch (choice.action) {
                 case "View all Employees":
+                    listEmployees();
                     break;
 
                 case "View all Employees by Department":
+                    viewDepartmentEmployees();
                     break;
 
                 case "View all Employees by Manager":
+                    viewManagerEmployees();
                     break;
 
                 case "Add Employee":
@@ -94,9 +96,45 @@ function loadMainMenu() {
 
                 case "Update Employee Manager":
                     break;
-                    
+
                 case "Exit":
                     break;
             }
+        });
+};
+
+function listEmployees() {
+    console.log("\nLoading...\n")
+    connection.query("SELECT * FROM employee_tracker.employee", function (err, result, fields) {
+        if (err) throw err;
+        console.table(result);
+        inquirer.prompt({
+            name: "action",
+            type: "list",
+            message: "Done!  Return to the Main Menu?",
+            choices: [
+                "Yes",
+                "No"
+            ]
+        }).then(function(choice) {
+            switch (choice.action) {
+                case "Yes":
+                    loadMainMenu();
+                    break;
+                case "No":
+                    console.log("... Well what else are you gonna do...")
+            }
         })
-}
+    })
+};
+
+function viewDepartmentEmployees() {
+    console.log("\nLoading...\n")
+    inquirer.prompt({
+        name:  "departmentName",
+        type: "input",
+        message: "What's the Department name?"
+    })
+};
+
+// function viewManagerEmployees() {}
