@@ -1,0 +1,17 @@
+DROP DATABASE IF EXISTS employee_list;
+CREATE DATABASE employee_list;
+
+USE employee_list;
+
+CREATE TABLE company_employees (
+    id INTEGER(300) AUTO_INCREMENT NOT NULL,
+    first_name VARCHAR(30) NOT NULL,
+    last_name VARCHAR(30) NOT NULL,
+    title VARCHAR(30) NOT NULL,
+    department VARCHAR(30) NOT NULL,
+    salary INTEGER(10000000) NOT NULL,
+    manager VARCHAR(30) NOT NULL,
+    PRIMARY KEY (id)
+)
+
+-- ID, FIRST NAME, LAST NAME, TITLE, DEPARTMENT, SALARY, MANAGER
