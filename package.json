@@ -1,0 +1,25 @@
+{
+  "name": "content-manager",
+  "version": "1.0.0",
+  "description": "An Application used to manage data",
+  "main": "employees.js",
+  "dependencies": {
+    "cfonts": "^2.8.1",
+    "inquirer": "^7.1.0",
+    "mysql": "^2.18.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JayPTucker/content-manager.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JayPTucker/content-manager/issues"
+  },
+  "homepage": "https://github.com/JayPTucker/content-manager#readme"
+}
