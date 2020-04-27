@@ -29,11 +29,17 @@ VALUES (1, "TTT");
 
 -- EMPLOYEE 1 --
 INSERT INTO employee (id, first_name, last_name, role_id, manager_id)
-VALUES (1, "Jay", "Tucker", 1, 2);
+VALUES (1, "Jay", "Tucker", 1, 3);
+
+INSERT INTO employee (id, first_name, last_name, role_id, manager_id)
+VALUES (4, "Jeret", "Tucker", 1, 2);
 
 -- EMPLOYEE 2 (MANAGER) --
 INSERT INTO employee (id, first_name, last_name, role_id, manager_id)
 VALUES (2, "Jeff", "Tucker", 2, NULL);
+
+INSERT INTO employee (id, first_name, last_name, role_id, manager_id)
+VALUES (3, "Keith", "Tucker", 2, NULL);
 
 -- ROLE 1 (MANAGER) --
 INSERT INTO role (id, title, salary, department_id)

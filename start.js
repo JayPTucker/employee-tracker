@@ -17,6 +17,8 @@ connection.connect(function(err) {
     loadIntro();
 })
 
+
+// PROCESS OF LOADING THE MAIN MENU --- THE INTRO DECOR
 function loadIntro() {
     console.log("Loading...")
 
@@ -56,6 +58,8 @@ function loadIntro() {
     }, 5000)
 }
 
+
+// LOADS THE ACTUAL MAIN MENU WHERE THERE ARE FUNCTIONAL BUTTONS
 function loadMainMenu() {
     inquirer.prompt({
             name: "action",
@@ -86,6 +90,7 @@ function loadMainMenu() {
                     break;
 
                 case "Add Employee":
+                    addEmployee();
                     break;
 
                 case "Remove Employee":
@@ -98,16 +103,17 @@ function loadMainMenu() {
                     break;
 
                 case "Exit":
+                    exitApp();
                     break;
             }
         });
 };
 
-function listEmployees() {
-    console.log("\nLoading...\n")
-    connection.query("SELECT * FROM employee_tracker.employee", function (err, result, fields) {
-        if (err) throw err;
-        console.table(result);
+
+
+// FUNCTION THAT ASKS IF WE WANT TO RETURN TO OUR MAIN MENU
+function returnToMainMenu() {
+    setTimeout(function() {
         inquirer.prompt({
             name: "action",
             type: "list",
@@ -119,15 +125,29 @@ function listEmployees() {
         }).then(function(choice) {
             switch (choice.action) {
                 case "Yes":
+                    console.clear()
                     loadMainMenu();
                     break;
                 case "No":
                     console.log("... Well what else are you gonna do...")
             }
         })
+    }, 2000)
+}
+
+
+// FUNCTION THAT LISTS OUR EMPLOYEES FROM OUR DATABASE
+function listEmployees() {
+    console.log("\nLoading...\n")
+    connection.query("SELECT * FROM employee_tracker.employee", function (err, result, fields) {
+        if (err) throw err;
+        console.table(result);
+        returnToMainMenu();
     })
 };
 
+
+// VIEWING EMPLOYEES BY WHAT DEPARTMENT THEY ARE IN
 function viewDepartmentEmployees() {
     console.log("\nLoading...\n")
     console.log("Currently Available Departments:")
@@ -139,36 +159,74 @@ function viewDepartmentEmployees() {
         type: "input",
         message: "What's the Department name?"
     }).then(function({name}) {
-        console.log(name)
 
         connection.query("SELECT id FROM employee_tracker.department WHERE name='" + name + "'", function (err, result, fields) {
             if (err) throw err
-            var departmentID = (result[0].id) 
+            var department_id = (result[0].id) 
 
-        connection.query("SELECT id FROM employee_tracker.role WHERE department_id='" + departmentID + "'", function (err, result, fields) {
-            if (err) throw err;
-            for (i = 0; i < result.length; i++) {
-                var roleID = "role_id=" + "'" + result[i].id + "'"
+            connection.query("SELECT id FROM employee_tracker.role WHERE department_id='" + department_id + "'", function (err, result, fields) {
+                if (err) throw err;
+                for (i = 0; i < result.length; i++) {
+                    var role_id = "role_id=" + "'" + result[i].id + "'"
 
-                // for (i = 0; i < result.length - 1; i++) {
-                //     roleID + "OR"
-                //     console.log(roleID)
-                // }
-                connection.query("SELECT * FROM employee_tracker.employee WHERE " + roleID, function (err, result, fields) {
-                    if (err) throw err;
-                    console.table(result)
-                })
-            }
+                    // for (i = 0; i < result.length - 1; i++) {
+                    //     role_id + "OR"
+                    //     console.log(role_id)
+                    // }
 
-            // connection.query("SELECT * FROM employee_tracker.employee WHERE " + roleID, function (err, result, fields) {
-            //     if (err) throw err;
-            //     console.table(result)
-            // })
-        })
-        })
-        
+                    connection.query("SELECT * FROM employee_tracker.employee WHERE " + role_id, function (err, result, fields) {
+                        if (err) throw err;
+                        console.table(result)
+                        
+                    })
+                }
+            })
+        }) 
+        returnToMainMenu();
     })
+    })
+};
+
+
+// SHOWS A MANAGERS EMPLOYEES
+function viewManagerEmployees() {
+    console.log("\nLoading...\n")
+    console.log("List of Current Managers to Search by:")
+    connection.query("SELECT * FROM employee_tracker.employee WHERE manager_id IS NULL", function (err, result, fields) {
+        if (err) throw err;
+        console.table(result);
+    })
+    setTimeout(function() {
+        inquirer.prompt({
+            name: "id",
+            type: "input",
+            message: "Please Type in a Manager's ID from the Chart Above to see their Employees."
+        }).then(function({ id }) {
+            connection.query("SELECT * FROM employee_tracker.employee WHERE manager_id='" + id + "'", function (err, result, fields) {
+                if (err) throw err;
+                console.table(result);
+                returnToMainMenu();
+            })
+        })
+    }, 1000)
+};
+
+
+// FUNCTION THAT ADDS EMPLOYEES TO THE DATABASE
+function addEmployee() {
+    console.log("\nLoading...\n")
+    listEmployees();
+    console.log("\n Above is a Current List of Employees that are currently in the Database.")
+    inquirer.prompt({
+        name: "id",
+        type: "input",
+        message: "What is the Employee's ID?"
     })
 }
 
-// function viewManagerEmployees() {}
+
+
+
+function exitApp() {
+    console.log("Goodbye!  Come back soon <3")
+}
