@@ -130,11 +130,45 @@ function listEmployees() {
 
 function viewDepartmentEmployees() {
     console.log("\nLoading...\n")
+    console.log("Currently Available Departments:")
+    connection.query("SELECT * FROM employee_tracker.department;", function (err, result, fields) {
+        if (err) throw err;
+        console.table(result);
     inquirer.prompt({
-        name:  "departmentName",
+        name:  "name",
         type: "input",
         message: "What's the Department name?"
+    }).then(function({name}) {
+        console.log(name)
+
+        connection.query("SELECT id FROM employee_tracker.department WHERE name='" + name + "'", function (err, result, fields) {
+            if (err) throw err
+            var departmentID = (result[0].id) 
+
+        connection.query("SELECT id FROM employee_tracker.role WHERE department_id='" + departmentID + "'", function (err, result, fields) {
+            if (err) throw err;
+            for (i = 0; i < result.length; i++) {
+                var roleID = "role_id=" + "'" + result[i].id + "'"
+
+                // for (i = 0; i < result.length - 1; i++) {
+                //     roleID + "OR"
+                //     console.log(roleID)
+                // }
+                connection.query("SELECT * FROM employee_tracker.employee WHERE " + roleID, function (err, result, fields) {
+                    if (err) throw err;
+                    console.table(result)
+                })
+            }
+
+            // connection.query("SELECT * FROM employee_tracker.employee WHERE " + roleID, function (err, result, fields) {
+            //     if (err) throw err;
+            //     console.table(result)
+            // })
+        })
+        })
+        
     })
-};
+    })
+}
 
 // function viewManagerEmployees() {}
