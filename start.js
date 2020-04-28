@@ -186,17 +186,25 @@ function listEmployees() {
             inquirer.prompt({
                 name: "answer",
                 type: "list",
-                message: "Would you like to add another Employee?",
+                message: "What would you like to do?",
                 choices: [
-                    "Yes",
-                    "No, Return to the Main Menu"
+                    "Add another Employee",
+                    "Delete an Employee",
+                    "Edit an Employee",
+                    "Return to the Main Menu"
                 ]
             }).then(function(choice) {
                 switch (choice.answer) {
-                    case "Yes":
+                    case "Add another Employee":
                         addEmployee();
                         break;
-                    case "No, Return to the Main Menu":
+                    case "Delete an Employee":
+                        deleteEmployee();
+                        break;
+                    case "Edit an Employee":
+                        editEmployee();
+                        break;
+                    case "Return to the Main Menu":
                         loadMainMenu();
                         break;
                 }
@@ -204,6 +212,85 @@ function listEmployees() {
         }
     })
 };
+
+function deleteEmployee() {
+    inquirer.prompt({
+        name: "id",
+        type: "input",
+        message: "By ID, what Employee would you like to remove from the Database?"
+    }).then(function({ id }) {
+        connection.query(`DELETE FROM employee WHERE id=${id}`)
+        listEmployees();
+    })
+};
+
+function editEmployee() {
+    inquirer.prompt({
+        name: "id",
+        type: "input",
+        message: "By ID, what Employee would you like to edit?"
+    }).then(function({ id }) {
+        console.clear()
+        connection.query(`SELECT * FROM employee_tracker.employee WHERE id=${id}`, function (err, result, fields) {
+            if (err) throw err;
+            console.table(result)
+            inquirer.prompt([{
+                name: "answer",
+                type: "list",
+                message: "What Would you like to Change?",
+                choices: [
+                    "ID",
+                    "First Name",
+                    "Last Name",
+                    "Role ID",
+                    "Manager ID"
+                ]
+            }]).then(function(choice) {
+                switch (choice.answer) {
+                    case "ID":
+                        changeID();
+                        break;
+                    case "First Name":
+                        changeFirstName();
+                        break;
+                    case "Last Name":
+                        changeLastName();
+                        break;
+                    case "Role ID":
+                        changeRoleName();
+                        break;
+                    case "Manager ID":
+                        changeManagerID();
+                        break;
+                }
+            })
+        })
+
+        // ---------------------------------------------------
+
+        // CHANGE THE ID
+
+        function changeID() {
+            connection.query("SELECT * FROM employee_tracker.employee", function(err, result, fields) {
+                if (err) throw err;
+                console.table(result)
+            })
+            setTimeout(function() {
+                console.clear()
+                inquirer.prompt({
+                    name: "newID",
+                    type: "input",
+                    message: "What would you like the Employees new ID to be?  It can't match any existing IDs above."
+                }).then(function({ newID }) {
+                    connection.query(`UPDATE employee SET id=${newID} WHERE id=${id};`, function(err, result, fields) {
+                        if (err) throw err;
+                        returnToMainMenu();
+                    })
+                })
+            }, 500)
+        }
+    })
+}
 
 
 // VIEWING EMPLOYEES BY WHAT DEPARTMENT THEY ARE IN
