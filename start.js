@@ -233,7 +233,8 @@ function editEmployee() {
         console.clear()
         connection.query(`SELECT * FROM employee_tracker.employee WHERE id=${id}`, function (err, result, fields) {
             if (err) throw err;
-            console.table(result)
+            let selectedID = result[0].id;
+
             inquirer.prompt([{
                 name: "answer",
                 type: "list",
@@ -264,33 +265,128 @@ function editEmployee() {
                         break;
                 }
             })
-        })
 
-        // ---------------------------------------------------
-
-        // CHANGE THE ID
-
-        function changeID() {
-            connection.query("SELECT * FROM employee_tracker.employee", function(err, result, fields) {
-                if (err) throw err;
-                console.table(result)
-            })
-            setTimeout(function() {
-                console.clear()
-                inquirer.prompt({
-                    name: "newID",
-                    type: "input",
-                    message: "What would you like the Employees new ID to be?  It can't match any existing IDs above."
-                }).then(function({ newID }) {
-                    connection.query(`UPDATE employee SET id=${newID} WHERE id=${id};`, function(err, result, fields) {
-                        if (err) throw err;
-                        returnToMainMenu();
-                    })
+            function changeID() {
+                connection.query("SELECT * FROM employee_tracker.employee", function(err, result, fields) {
+                    if (err) throw err;
+                    console.table(result)
                 })
-            }, 500)
-        }
+                setTimeout(function() {
+                    console.clear()
+                    inquirer.prompt({
+                        name: "newID",
+                        type: "input",
+                        message: "What would you like the Employees new ID to be?  It can't match any existing IDs above."
+                    }).then(function({ newID }) {
+                        connection.query(`UPDATE employee SET id=${newID} WHERE id=${selectedID}`, function(err, result, fields) {
+                            if (err) throw err;
+                            returnToMainMenu();
+                        })
+                    })
+                }, 500)
+            }
+
+            function changeFirstName() {
+                connection.query("SELECT * FROM employee_tracker.employee", function(err, result, fields) {
+                    if (err) throw err;
+                    console.table(result)
+                })
+                setTimeout(function() {
+                    console.clear()
+                    inquirer.prompt({
+                        name: "newFirstName",
+                        type: "input",
+                        message: "What would you like the Employees new First Name to be?"
+                    }).then(function({ newFirstName }) {
+                        connection.query(`UPDATE employee SET first_name="${newFirstName}" WHERE id=${selectedID}`, function(err, result, fields) {
+                            if (err) throw err;
+                            returnToMainMenu();
+                        })
+                    })
+                }, 500)
+            }
+
+            function changeLastName() {
+                connection.query("SELECT * FROM employee_tracker.employee", function(err, result, fields) {
+                    if (err) throw err;
+                    console.table(result)
+                })
+                setTimeout(function() {
+                    console.clear()
+                    inquirer.prompt({
+                        name: "newLastName",
+                        type: "input",
+                        message: "What would you like the Employees new Last Name to be?"
+                    }).then(function({ newLastName }) {
+                        connection.query(`UPDATE employee SET last_name=${newLastName} WHERE id=${selectedID};`, function(err, result, fields) {
+                            if (err) throw err;
+                            returnToMainMenu();
+                        })
+                    })
+                }, 500)
+            }
+
+            function changeRoleName() {
+                connection.query("SELECT * FROM employee_tracker.role", function(err, result, fields) {
+                    if (err) throw err;
+                    if (result[0] == null) {
+                        inquirer.prompt({
+                            name: "answer",
+                            type: "list",
+                            message: "No Roles were found in the Database in order to Edit this Employee's Role.  Would you like to Create one?",
+                            choices: [
+                                "Yes",
+                                "No, Return to the Main Menu"
+                            ]
+                        }).then(function(choice) {
+                            switch (choice.answer) {
+                                case "Yes":
+                                    createRole();
+                                    break;
+                                case "No, Return to the Main Menu":
+                                    loadMainMenu();
+                                    break;
+                            }
+                        })
+                    } else {
+                        console.table(result)
+                        setTimeout(function() {
+                            inquirer.prompt({
+                                name: "newRole",
+                                type: "input",
+                                message: "What would you like the Employees new Role to be? (Must be the Role's ID Number)"
+                            }).then(function({ newRole }) {
+                                connection.query(`UPDATE employee SET role_id=${newRole} WHERE id=${selectedID};`, function(err, result, fields) {
+                                    if (err) throw err;
+                                    returnToMainMenu();
+                                })
+                            })
+                        }, 500)
+                    }
+                })
+            }
+
+            function changeManagerID() {
+                connection.query("SELECT * FROM employee_tracker.employee", function(err, result, fields) {
+                    if (err) throw err;
+                    console.table(result)
+                    setTimeout(function() {
+                        inquirer.prompt({
+                            name: "newManagerID",
+                            type: "input",
+                            message: "What would you like the Employees new Manager to be? (Must be the Manager's ID Number)\n IF this Employee IS the Manager, type in NULL"
+                        }).then(function({ newManagerID }) {
+                            connection.query(`UPDATE employee SET manager_id=${newManagerID} WHERE id=${selectedID};`, function(err, result, fields) {
+                                if (err) throw err;
+                                returnToMainMenu();
+                            })
+                        })
+                    }, 500)
+                })
+            }
+        })  
     })
-}
+};
 
 
 // VIEWING EMPLOYEES BY WHAT DEPARTMENT THEY ARE IN
