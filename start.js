@@ -20,6 +20,7 @@ connection.connect(function(err) {
 
 // (FINISHED) PROCESS OF LOADING THE MAIN MENU --- THE INTRO DECOR
 function loadIntro() {
+    console.clear();
     console.log("Loading...")
 
     CFonts.say("Welcome To:", {
@@ -51,16 +52,17 @@ function loadIntro() {
             lineHeight: 0,
             space: false
         })
-    }, 4000)
+    }, 4500)
 
     setTimeout(function() {
         loadMainMenu()
-    }, 5000)
+    }, 6500)
 }
 
 
 // (FINISHED) LOADS THE ACTUAL MAIN MENU WHERE THERE ARE FUNCTIONAL BUTTONS
 function loadMainMenu() {
+    console.clear();
     inquirer.prompt({
             name: "action",
             type: "list",
@@ -144,7 +146,6 @@ function returnToMainMenu() {
         }).then(function(choice) {
             switch (choice.action) {
                 case "Yes":
-                    console.clear()
                     loadMainMenu();
                     break;
             }
@@ -155,6 +156,7 @@ function returnToMainMenu() {
 
 // (FINISHED) FUNCTION THAT LISTS OUR EMPLOYEES FROM OUR DATABASE
 function listEmployees() {
+    console.clear();
     console.log("\nLoading...\n")
 
     connection.query("SELECT * FROM employee_tracker.employee", function (err, result, fields) {
@@ -172,18 +174,33 @@ function listEmployees() {
                 }).then(function(choice) {
                     switch (choice.answer) {
                         case "Yes":
-                            console.clear();
                             addEmployee();
                             break;
                         case "No, Return to Main Menu":
-                            console.clear();
                             loadMainMenu();
                             break;
                     }
                 }) 
         } else {
             console.table(result);
-            returnToMainMenu();
+            inquirer.prompt({
+                name: "answer",
+                type: "list",
+                message: "Would you like to add another Employee?",
+                choices: [
+                    "Yes",
+                    "No, Return to the Main Menu"
+                ]
+            }).then(function(choice) {
+                switch (choice.answer) {
+                    case "Yes":
+                        addEmployee();
+                        break;
+                    case "No, Return to the Main Menu":
+                        loadMainMenu();
+                        break;
+                }
+            })
         }
     })
 };
@@ -256,6 +273,7 @@ function viewManagerEmployees() {
 // FUNCTION THAT ADDS EMPLOYEES TO THE DATABASE
 
 function addEmployee() {
+    console.clear();
     console.log("\nLoading...\n")
 
     let hasDepartment = true
@@ -267,21 +285,96 @@ function addEmployee() {
             hasDepartment = false
             noDepartmentFound();
         } else {
-            console.log("There is a Department.")
+            checkForRoles();
         }
-    })
+    });
+
+    function checkForRoles() {
+        connection.query("SELECT * FROM employee_tracker.role", function (err, result, fields) {
+            if (err) throw err;
+            if (result[0] == null) {
+                hasRole = false
+                noRoleFound();
+            } else {
+                createEmployee();
+            }
+        })
+    };
+
+    function createEmployee() {
+        connection.query("SELECT * FROM employee_tracker.employee", function(err, result, fields) {
+            if (err) throw err;
+            if (result[0] == null) {
+                console.log("No Existing Employees to be found.")
+            } else {
+                console.table(result)
+                console.log("Above is a list of already-existing Employees,")
+            }
+        })
+        setTimeout(function() {
+            inquirer.prompt([{
+                name: "id",
+                type: "input",
+                message: "What would you like the Employee's ID to be? (It cannot match any existing Employee's IDs)"
+            }, {
+                name: "first_name",
+                type: "input",
+                message: "What's the Employee's First Name?"
+            }, {
+                name: "last_name",
+                type: "input",
+                message: "What's the Employee's Last Name?"
+            }]).then(function({ id, first_name, last_name }) {
+                connection.query("SELECT * FROM employee_tracker.role", function(err, result, fields) {
+                    if (err) throw err;
+                    console.table(result)
+                    inquirer.prompt({
+                        name: "role_id",
+                        type: "input",
+                        message: "Based on the Chart above, what Role should this Employee be Given? (Type in the ID)"
+                    }).then(function({ role_id }) {
+                        connection.query("SELECT * FROM employee_tracker.employee", function(err, result, fields) {
+                            if (err) throw err;
+                            console.table(result)
+                            inquirer.prompt({
+                                name: "manager_id",
+                                type: "input",
+                                message: "Based on the Chart above, who is the Employee's Manager? (Type in NULL if they are the Manager)"
+                            }).then(function({ manager_id }) {
+                                connection.query(`INSERT INTO employee (id, first_name, last_name, role_id, manager_id) 
+                                                  VALUES (${id}, "${first_name}", "${last_name}", ${role_id}, ${manager_id})`)
+                                returnToMainMenu();
+                                
+                                // INSERT INTO employee (id, first_name, last_name, role_id, manager_id)
+                                // VALUES (1, "Jay", "Tucker", 1, 3);
+                            })
+                        })
+                    })
+                })
+            })
+        }, 1000)
+    };
 
     function noDepartmentFound() {
         console.clear();
         createDepartment();
-        console.log("A Department is Required in Order to add an Employee,")
-    }
+        console.log("A Department is Required in Order to add an Employee to the Database,")
+    };
+
+    function noRoleFound() {
+        createRole();
+        setTimeout(function() {
+            console.log("A Role is Required in Order to add an Employee to the Database,")
+        }, 1000)
+        
+    };
 };
 
 
 
 // (FINISHED) FUNCTION TO VIEW THE ROLES
 function viewRoles() {
+    console.clear();
     console.log("\nLoading...\n")
 
     connection.query("SELECT * FROM employee_tracker.role", function (err, result, fields) {
@@ -318,6 +411,7 @@ function viewRoles() {
 
 // (FINISHED) FUNCTION TO VIEW THE DEPARTMENTS
 function viewDepartments() {
+    console.clear();
     console.log("\nLoading...\n")
 
     connection.query("SELECT * FROM employee_tracker.department", function (err, result, fields) {
@@ -334,11 +428,9 @@ function viewDepartments() {
             }).then(function(choice) {
                 switch (choice.answer) {
                     case "Yes":
-                        console.clear();
                         createDepartment();
                         break;
                     case "No, Return to Main Menu":
-                        console.clear();
                         loadMainMenu();
                         break;
                 }
@@ -355,6 +447,7 @@ function viewDepartments() {
 
 // (FINISHED) CREATING ROLES FOR OUR EMPLOYEES
 function createRole() {
+    console.clear();
     console.log("\nLoading...\n")
 
     connection.query("SELECT * FROM employee_tracker.department", function (err, result, fields) {
@@ -370,11 +463,9 @@ function createRole() {
             }).then(function(choice) {
                 switch (choice.answer) {
                     case "Yes":
-                        console.clear();
                         createDepartment();
                         break;
                     case "No, Return to Main Menu":
-                        console.clear();
                         loadMainMenu();
                         break;
                 }
@@ -437,6 +528,7 @@ function createRole() {
 // (FINISHED) CREATES A DEPARTMENT
 
 function createDepartment() {
+    console.clear();
     console.log("\nLoading...\n")
 
     connection.query("SELECT * FROM employee_tracker.department", function (err, result, fields) {
@@ -456,7 +548,6 @@ function createDepartment() {
                         createDepartmentFunction();
                         break;
                     case "No, Return to the Main Menu":
-                        console.clear();
                         loadMainMenu();
                         break;
                 }
