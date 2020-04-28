@@ -69,7 +69,11 @@ function loadMainMenu() {
                 "View all Employees",
                 "View all Employees by Department",
                 "View all Employees by Manager",
+                "View all Roles",
+                "View all Departments",
                 "Add Employee",
+                "Add Role",
+                "Add Department",
                 "Remove Employee",
                 "Update Employee Role",
                 "Update Employee Manager",
@@ -89,8 +93,24 @@ function loadMainMenu() {
                     viewManagerEmployees();
                     break;
 
+                case "View all Roles":
+                    viewRoles();
+                    break;
+                
+                case "View all Departments":
+                    viewDepartments();
+                    break;
+                
                 case "Add Employee":
                     addEmployee();
+                    break;
+
+                case "Add Role":
+                    createRole();
+                    break;
+                
+                case "Add Department":
+                    createDepartment();
                     break;
 
                 case "Remove Employee":
@@ -132,7 +152,7 @@ function returnToMainMenu() {
                     console.log("... Well what else are you gonna do...")
             }
         })
-    }, 2000)
+    }, 1000)
 }
 
 
@@ -148,6 +168,7 @@ function listEmployees() {
 
 
 // VIEWING EMPLOYEES BY WHAT DEPARTMENT THEY ARE IN
+
 function viewDepartmentEmployees() {
     console.log("\nLoading...\n")
     console.log("Currently Available Departments:")
@@ -169,11 +190,6 @@ function viewDepartmentEmployees() {
                 for (i = 0; i < result.length; i++) {
                     var role_id = "role_id=" + "'" + result[i].id + "'"
 
-                    // for (i = 0; i < result.length - 1; i++) {
-                    //     role_id + "OR"
-                    //     console.log(role_id)
-                    // }
-
                     connection.query("SELECT * FROM employee_tracker.employee WHERE " + role_id, function (err, result, fields) {
                         if (err) throw err;
                         console.table(result)
@@ -189,6 +205,7 @@ function viewDepartmentEmployees() {
 
 
 // SHOWS A MANAGERS EMPLOYEES
+
 function viewManagerEmployees() {
     console.log("\nLoading...\n")
     console.log("List of Current Managers to Search by:")
@@ -212,21 +229,235 @@ function viewManagerEmployees() {
 };
 
 
+
+
 // FUNCTION THAT ADDS EMPLOYEES TO THE DATABASE
+
 function addEmployee() {
     console.log("\nLoading...\n")
-    listEmployees();
-    console.log("\n Above is a Current List of Employees that are currently in the Database.")
-    inquirer.prompt({
-        name: "id",
-        type: "input",
-        message: "What is the Employee's ID?"
+    connection.query("SELECT * FROM employee_tracker.employee", function (err, result, fields) {
+        if (err) throw err;
+        console.table(result);
     })
-}
+
+    setTimeout(function(){
+        console.log("Above is a Current List of Employees that are currently in the Database.")
+
+        connection.query("SELECT * FROM employee_tracker.role", function (err, result, fields) {
+            if (err) throw err;
+            if(result[0] == null) {
+                inquirer.prompt({
+                    name: "action",
+                    type: "list",
+                    message: "There are no Roles to give to your Employee.  Please Create One Before Continuing.",
+                    choices: [
+                        "Create a New Role",
+                        "Return to Main Menu"
+                    ]
+                }).then(function(choice) {
+                    switch (choice.action) {
+                        case "Create a New Role":
+                            createRole();
+                            break;
+                        case "Return to Main Menu":
+                            console.clear()
+                            loadMainMenu();
+                            break;
+                    }
+                })
+            }
+        })
+        // inquirer.prompt([{
+        //     name: "id",
+        //     type: "input",
+        //     message: "What is the New Employee's ID?"
+        // } , {
+        //     name: "first_name",
+        //     type: "input",
+        //     message: "What is the Employee's First Name?"
+        // } , {
+        //     name: "last_name",
+        //     type: "input",
+        //     message: "What is the Employee's Last Name?"
+        // }
+        // ]).then(function() {
+        //     if(connection.query("SELECT * FROM employee_tracker.role") === "NULL") {
+        //         console.log("Nothin Here")
+        //     }
+        // })
+    }, 1000)
+    
+};
+
+
+
+// FUNCTION TO VIEW THE ROLES
+function viewRoles() {
+    console.log("\nLoading...\n")
+
+    connection.query("SELECT * FROM employee_tracker.role", function (err, result, fields) {
+        if (err) throw err;
+        if (result[0] == null) {
+            inquirer.prompt({
+                name: "answer",
+                type: "list",
+                message: "There are no Roles To be found in the System, Would you like to Create One?",
+                choices: [
+                    "Yes",
+                    "No, Return to Main Menu"
+                ]
+            }).then(function(choice) {
+                switch (choice.answer) {
+                    case "Yes":
+                        console.clear();
+                        createRole();
+                        break;
+                    case "No, Return to Main Menu":
+                        console.clear();
+                        loadMainMenu();
+                        break;
+                }
+            })
+        } else {
+            console.table(result);
+        }
+        
+    })
+};
+
+
+// FUNCTION TO VIEW THE DEPARTMENTS
+function viewDepartments() {
+    console.log("\nLoading...\n")
+
+    connection.query("SELECT * FROM employee_tracker.department", function (err, result, fields) {
+        if (err) throw err;
+        if (result[0] == null) {
+            inquirer.prompt({
+                name: "answer",
+                type: "list",
+                message: "There are no Departments To be found in the System, Would you like to Create One?",
+                choices: [
+                    "Yes",
+                    "No, Return to Main Menu"
+                ]
+            }).then(function(choice) {
+                switch (choice.answer) {
+                    case "Yes":
+                        console.clear();
+                        createDepartment();
+                        break;
+                    case "No, Return to Main Menu":
+                        console.clear();
+                        loadMainMenu();
+                        break;
+                }
+            })
+        } else {
+            console.table(result);
+            returnToMainMenu();
+        }
+        
+    })
+};
+
+
+
+// CREATING ROLES FOR OUR EMPLOYEES
+function createRole() {
+    console.log("\nLoading...\n")
+
+    connection.query("SELECT * FROM employee_tracker.role", function (err, result, fields) {
+        if (err) throw err;
+        console.table(result);
+        console.log("Above is a List of Roles that already exist (if any)")
+    })
+
+    setTimeout(function(){
+        inquirer.prompt([{
+            name: "id",
+            type: "input",
+            message: "What would you like the Role ID to be? (It cannot match any Existing ones)"
+        } , {
+            name: "title",
+            type: "input",
+            message: "What's the Title of this Role?"
+        } , {
+            name: "salary",
+            type: "input",
+            message: "What's the Salary of this Role/Position?"
+        }])
+        
+        
+        // .then(function() {
+        //     connection.query("SELECT * FROM employee_tracker.department", function (err, result, fields) {
+        //         if (err) throw err;
+        //         if (result[0] == null) {
+        //             inquirer.prompt({
+        //                 name: "answer",
+        //                 type: "list",
+        //                 message: "There are no Existing Departments, would you like to Create One?",
+        //                 choices: [
+        //                     "Yes",
+        //                     "No, Return to Main Menu"
+        //                 ]
+        //             }).then(function(choice) {
+        //                 switch (choice.answer) {
+        //                     case "Yes":
+        //                         createDepartment();
+        //                         break;
+        //                     case "No, Return to Main Menu":
+        //                         console.clear();
+        //                         loadMainMenu();
+        //                         break;
+        //                 }
+        //             }).then(function({ id, title, salary }) {
+        //                 connection.query("INSERT INTO role (id, title, salary, department_id) VALUES (" + id + ",'" + title + "', " + salary + ", '" + department_id + "')",  function (err, result, fields) {
+        //                     if (err) throw err;
+        //                     console.table(result);
+        //                 })
+        //             })
+        //         }
+        //     })
+        // })
+    }, 1000)
+};
 
 
 
 
+// CREATES A DEPARTMENT
+
+function createDepartment() {
+    console.log("\nLoading...\n")
+
+    connection.query("SELECT * FROM employee_tracker.department", function (err, result, fields) {
+        if (err) throw err;
+        console.table(result);
+        console.log("Above is a List of Departments that already exist (if any)")
+    })
+
+    setTimeout(function(){
+        inquirer.prompt([{
+            name: "id",
+            type: "input",
+            message: "What would you like the Department ID to be? (It cannot match any Existing ones)"
+        } , {
+            name: "name",
+            type: "input",
+            message: "What's Name of this Department?"
+        }]).then(function({ id, name }) {
+            connection.query("INSERT INTO department (id, name) VALUES (" + id + ", '" + name + "');", function (err, result, fields) {
+                if (err) throw err;
+                returnToMainMenu();
+            })
+        })
+    })
+};
+
+
+
+// EXIT FUNCTION:
 function exitApp() {
     console.log("Goodbye!  Come back soon <3")
 }
