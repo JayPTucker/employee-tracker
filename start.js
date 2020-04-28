@@ -139,8 +139,7 @@ function returnToMainMenu() {
             type: "list",
             message: "Done!  Return to the Main Menu?",
             choices: [
-                "Yes",
-                "No"
+                "Yes"
             ]
         }).then(function(choice) {
             switch (choice.action) {
@@ -148,8 +147,6 @@ function returnToMainMenu() {
                     console.clear()
                     loadMainMenu();
                     break;
-                case "No":
-                    console.log("... Well what else are you gonna do...")
             }
         })
     }, 1000)
@@ -260,59 +257,25 @@ function viewManagerEmployees() {
 
 function addEmployee() {
     console.log("\nLoading...\n")
-    
-    connection.query("SELECT * FROM employee_tracker.employee", function (err, result, fields) {
+
+    let hasDepartment = true
+    let hasRole = true
+
+    connection.query("SELECT * FROM employee_tracker.department", function (err, result, fields) {
         if (err) throw err;
-        console.table(result);
+        if (result[0] == null) {
+            hasDepartment = false
+            noDepartmentFound();
+        } else {
+            console.log("There is a Department.")
+        }
     })
 
-    setTimeout(function(){
-        console.log("Above is a Current List of Employees that are currently in the Database.")
-
-        connection.query("SELECT * FROM employee_tracker.role", function (err, result, fields) {
-            if (err) throw err;
-            if(result[0] == null) {
-                inquirer.prompt({
-                    name: "action",
-                    type: "list",
-                    message: "There are no Roles to give to your Employee.  Please Create One Before Continuing.",
-                    choices: [
-                        "Create a New Role",
-                        "Return to Main Menu"
-                    ]
-                }).then(function(choice) {
-                    switch (choice.action) {
-                        case "Create a New Role":
-                            createRole();
-                            break;
-                        case "Return to Main Menu":
-                            console.clear()
-                            loadMainMenu();
-                            break;
-                    }
-                })
-            }
-        })
-        // inquirer.prompt([{
-        //     name: "id",
-        //     type: "input",
-        //     message: "What is the New Employee's ID?"
-        // } , {
-        //     name: "first_name",
-        //     type: "input",
-        //     message: "What is the Employee's First Name?"
-        // } , {
-        //     name: "last_name",
-        //     type: "input",
-        //     message: "What is the Employee's Last Name?"
-        // }
-        // ]).then(function() {
-        //     if(connection.query("SELECT * FROM employee_tracker.role") === "NULL") {
-        //         console.log("Nothin Here")
-        //     }
-        // })
-    }, 1000)
-    
+    function noDepartmentFound() {
+        console.clear();
+        createDepartment();
+        console.log("A Department is Required in Order to add an Employee,")
+    }
 };
 
 
@@ -484,7 +447,7 @@ function createDepartment() {
                 type: "list",
                 message: "There are currently No Departments in the Database.  Please Create one.",
                 choices: [
-                    "Yes",
+                    "Ok",
                     "No, Return to the Main Menu"
                 ]
             }).then(function(choice) {
