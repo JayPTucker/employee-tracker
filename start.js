@@ -2,6 +2,8 @@ const mysql = require("mysql");
 const inquirer = require("inquirer");
 const CFonts = require("cfonts");
 
+// MYSQL SERVER CONNECTION INFO
+
 var connection = mysql.createConnection({
     host: "localhost",
     port: 3306,
@@ -17,6 +19,7 @@ connection.connect(function(err) {
     loadIntro();
 })
 
+// ---------------------------------
 
 // (FINISHED) PROCESS OF LOADING THE MAIN MENU --- THE INTRO DECOR
 function loadIntro() {
