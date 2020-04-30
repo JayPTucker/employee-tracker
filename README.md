@@ -57,4 +57,4 @@ If you have any questions, please Email me at: jayptuckerimportant@gmail.com
 
  
 ## 📷 Screenshots: <a name='screenshots'></a>
-<img src="https://media.giphy.com/media/kaHPGf8wJVr1KuFKYC/giphy.gif">
+![Example](assets/example.gif)
