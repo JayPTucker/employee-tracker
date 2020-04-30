@@ -76,9 +76,6 @@ function loadMainMenu() {
                 "Add Employee",
                 "Add Role",
                 "Add Department",
-                "Remove Employee",
-                "Update Employee Role",
-                "Update Employee Manager",
                 "Exit"
             ]
         }).then(function(choice) {
@@ -113,15 +110,6 @@ function loadMainMenu() {
                 
                 case "Add Department":
                     createDepartment();
-                    break;
-
-                case "Remove Employee":
-                    break;
-
-                case "Update Employee Role":
-                    break;
-
-                case "Update Employee Manager":
                     break;
 
                 case "Exit":
@@ -393,35 +381,36 @@ function editEmployee() {
 
 function viewDepartmentEmployees() {
     console.log("\nLoading...\n")
-    console.log("Currently Available Departments:")
-    connection.query("SELECT * FROM employee_tracker.department;", function (err, result, fields) {
-        if (err) throw err;
-        console.table(result);
-    inquirer.prompt({
-        name:  "name",
-        type: "input",
-        message: "What's the Department name?"
-    }).then(function({name}) {
 
-        connection.query("SELECT id FROM employee_tracker.department WHERE name='" + name + "'", function (err, result, fields) {
-            if (err) throw err
-            var department_id = (result[0].id) 
+    connection.query(`SELECT * FROM employee_tracker.department`, function(err, result, fields) {
+        if (err) throw err
+        if (result[0] == null) {
+            console.log("There are no Departments found in the Database.")
+            returnToMainMenu();
+        } else {   
+            console.table(result)
+            inquirer.prompt({
+                name: "id",
+                type: "input",
+                message: "Accoridng to the Chart above, what Department would you like to see the Employees of? (Please use the ID of the Department)"
+            }).then(function({ id }) {
+                connection.query(`SELECT * FROM employee_tracker.role WHERE department_id=${id}`, function(err, result, fields) {
+                    if (err) throw err
+                    if (result[0] == null) {
+                        console.log("No Employees in this Department")
+                    } else {
+                        for (var i = 0; i < result.length; i++) {
+                            connection.query(`SELECT * FROM employee_tracker.employee WHERE role_id=${result[i].id}`, function(err, result, fields) {
+                                if (err) throw err;
+                                console.table(result) 
+                            })  
+                        }
+                        returnToMainMenu();
+                    }
 
-            connection.query("SELECT id FROM employee_tracker.role WHERE department_id='" + department_id + "'", function (err, result, fields) {
-                if (err) throw err;
-                for (i = 0; i < result.length; i++) {
-                    var role_id = "role_id=" + "'" + result[i].id + "'"
-
-                    connection.query("SELECT * FROM employee_tracker.employee WHERE " + role_id, function (err, result, fields) {
-                        if (err) throw err;
-                        console.table(result)
-                        
-                    })
-                }
+                })
             })
-        }) 
-        returnToMainMenu();
-    })
+        }
     })
 };
 
@@ -443,8 +432,13 @@ function viewManagerEmployees() {
         }).then(function({ id }) {
             connection.query("SELECT * FROM employee_tracker.employee WHERE manager_id='" + id + "'", function (err, result, fields) {
                 if (err) throw err;
-                console.table(result);
-                returnToMainMenu();
+                if (result[0] == null) {
+                    console.log("\nThere are no Employees under this Manager.")
+                    returnToMainMenu();
+                } else {
+                    console.table(result);
+                    returnToMainMenu();
+                }
             })
         })
     }, 1000)
@@ -625,7 +619,7 @@ function deleteRole() {
         connection.query(`DELETE FROM role WHERE id=${id}`)
         viewRoles();
     })
-}
+};
 
 function editRole() {
     inquirer.prompt({
@@ -742,7 +736,7 @@ function editRole() {
             }
         })
     })
-}
+};
 
 
 // (FINISHED) FUNCTION TO VIEW THE DEPARTMENTS
