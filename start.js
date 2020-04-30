@@ -84,7 +84,7 @@ function loadMainMenu() {
         }).then(function(choice) {
             switch (choice.action) {
                 case "View all Employees":
-                    listEmployees();
+                    viewEmployees();
                     break;
 
                 case "View all Employees by Department":
@@ -155,7 +155,7 @@ function returnToMainMenu() {
 
 
 // (FINISHED) FUNCTION THAT LISTS OUR EMPLOYEES FROM OUR DATABASE
-function listEmployees() {
+function viewEmployees() {
     console.clear();
     console.log("\nLoading...\n")
 
@@ -220,7 +220,7 @@ function deleteEmployee() {
         message: "By ID, what Employee would you like to remove from the Database?"
     }).then(function({ id }) {
         connection.query(`DELETE FROM employee WHERE id=${id}`)
-        listEmployees();
+        viewEmployees();
     })
 };
 
@@ -472,6 +472,7 @@ function addEmployee() {
         }
     });
 
+
     function checkForRoles() {
         connection.query("SELECT * FROM employee_tracker.role", function (err, result, fields) {
             if (err) throw err;
@@ -484,6 +485,7 @@ function addEmployee() {
         })
     };
 
+    
     function createEmployee() {
         connection.query("SELECT * FROM employee_tracker.employee", function(err, result, fields) {
             if (err) throw err;
@@ -549,7 +551,6 @@ function addEmployee() {
         setTimeout(function() {
             console.log("A Role is Required in Order to add an Employee to the Database,")
         }, 1000)
-        
     };
 };
 
@@ -585,11 +586,163 @@ function viewRoles() {
             })
         } else {
             console.table(result);
-            returnToMainMenu();
+            inquirer.prompt({
+                name: "answer",
+                type: "list",
+                message: "What would you like to do?",
+                choices: [
+                    "Add a Role",
+                    "Delete a Role",
+                    "Edit a Role",
+                    "Return to the Main Menu"
+                ]
+            }).then(function(choice) {
+                switch (choice.answer) {
+                    case "Add a Role":
+                        createRole();
+                        break;
+                    case "Delete a Role":
+                        deleteRole();
+                        break;
+                    case "Edit a Role":
+                        editRole();
+                        break;
+                    case "Return to the Main Menu":
+                        loadMainMenu();
+                        break;
+                }
+            })
         }
-        
     })
 };
+
+function deleteRole() {
+    inquirer.prompt({
+        name: "id",
+        type: "input",
+        message: "By ID, what Role would you like to remove from the Database?"
+    }).then(function({ id }) {
+        connection.query(`DELETE FROM role WHERE id=${id}`)
+        viewRoles();
+    })
+}
+
+function editRole() {
+    inquirer.prompt({
+        name: "id",
+        type: "input",
+        message: "By ID, what Role would you like to edit?"
+    }).then(function({ id }) {
+        console.clear()
+        connection.query(`SELECT * FROM employee_tracker.role WHERE id=${id}`, function (err, result, fields) {
+            if (err) throw err;
+            let selectedID = result[0].id;
+
+            inquirer.prompt([{
+                name: "answer",
+                type: "list",
+                message: "What Would you like to Change?",
+                choices: [
+                    "ID",
+                    "Title",
+                    "Salary",
+                    "Department ID"
+                ]
+            }]).then(function(choice) {
+                switch (choice.answer) {
+                    case "ID":
+                        changeID();
+                        break;
+                    case "Title":
+                        changeTitle();
+                        break;
+                    case "Salary":
+                        changeSalary();
+                        break;
+                    case "Department ID":
+                        changeDepartmentID();
+                        break;
+                }
+            })
+
+            function changeID() {
+                connection.query("SELECT * FROM employee_tracker.role", function(err, result, fields) {
+                    if (err) throw err;
+                    console.table(result)
+                })
+                setTimeout(function() {
+                    inquirer.prompt({
+                        name: "newID",
+                        type: "input",
+                        message: "What would you like the Role's new ID to be?  It can't match any existing IDs above."
+                    }).then(function({ newID }) {
+                        connection.query(`UPDATE role SET id=${newID} WHERE id=${selectedID}`, function(err, result, fields) {
+                            if (err) throw err;
+                            returnToMainMenu();
+                        })
+                    })
+                }, 500)
+            }
+
+            function changeTitle() {
+                connection.query(`SELECT * FROM employee_tracker.role WHERE id=${selectedID}`, function(err, result, fields) {
+                    if (err) throw err;
+                    console.table(result)
+                })
+                setTimeout(function() {
+                    inquirer.prompt({
+                        name: "newTitle",
+                        type: "input",
+                        message: "What would you like the Role's new Title to be?"
+                    }).then(function({ newTitle }) {
+                        connection.query(`UPDATE role SET title="${newTitle}" WHERE id=${selectedID}`, function(err, result, fields) {
+                            if (err) throw err;
+                            returnToMainMenu();
+                        })
+                    })
+                }, 500)
+            }
+
+            function changeSalary() {
+                connection.query(`SELECT * FROM employee_tracker.role WHERE id=${selectedID}`, function(err, result, fields) {
+                    if (err) throw err;
+                    console.table(result)
+                })
+                setTimeout(function() {
+                    inquirer.prompt({
+                        name: "newSalary",
+                        type: "input",
+                        message: "What would you like the Role's new Salary to be?"
+                    }).then(function({ newSalary }) {
+                        connection.query(`UPDATE role SET salary=${newSalary} WHERE id=${selectedID}`, function(err, result, fields) {
+                            if (err) throw err;
+                            returnToMainMenu();
+                        })
+                    })
+                }, 500)
+            }
+
+            function changeDepartmentID() {
+                connection.query(`SELECT * FROM employee_tracker.role WHERE id=${selectedID}`, function(err, result, fields) {
+                    if (err) throw err;
+                    console.table(result)
+                })
+                setTimeout(function() {
+                    inquirer.prompt({
+                        name: "newDepartmentID",
+                        type: "input",
+                        message: "What would you like the Role's new Department ID to be?"
+                    }).then(function({ newDepartmentID }) {
+                        connection.query(`UPDATE role SET department_id=${newDepartmentID} WHERE id=${selectedID}`, function(err, result, fields) {
+                            if (err) throw err;
+                            returnToMainMenu();
+                        })
+                    })
+                }, 500)
+            }
+        })
+    })
+}
 
 
 // (FINISHED) FUNCTION TO VIEW THE DEPARTMENTS
@@ -620,7 +773,114 @@ function viewDepartments() {
             })
         } else {
             console.table(result);
-            returnToMainMenu();
+            inquirer.prompt({
+                name: "answer",
+                type: "list",
+                message: "What would you like to do?",
+                choices: [
+                    "Add a Department",
+                    "Delete a Department",
+                    "Edit a Department",
+                    "Return to the Main Menu"
+                ]
+            }).then(function(choice) {
+                switch (choice.answer) {
+                    case "Add a Department":
+                        createDepartmentFunction();
+                        break;
+                    case "Delete a Department":
+                        deleteDepartment();
+                        break;
+                    case "Edit a Department":
+                        editDepartment();
+                        break;
+                    case "Return to the Main Menu":
+                        loadMainMenu();
+                        break;
+                }
+            })
+
+            function deleteDepartment() {
+                inquirer.prompt({
+                    name: "id",
+                    type: "input",
+                    message: "By ID, what Department would you like to remove from the Database?"
+                }).then(function({ id }) {
+                    connection.query(`DELETE FROM department WHERE id=${id}`)
+                    viewDepartments();
+                })
+            }
+
+            function editDepartment() {
+                inquirer.prompt({
+                    name: "id",
+                    type: "input",
+                    message: "By ID, what Department would you like to edit?"
+                }).then(function({ id }) {
+                    console.clear()
+                    connection.query(`SELECT * FROM employee_tracker.department WHERE id=${id}`, function (err, result, fields) {
+                        if (err) throw err;
+                        let selectedID = result[0].id;
+            
+                        inquirer.prompt([{
+                            name: "answer",
+                            type: "list",
+                            message: "What Would you like to Change?",
+                            choices: [
+                                "ID",
+                                "Name"
+                            ]
+                        }]).then(function(choice) {
+                            switch (choice.answer) {
+                                case "ID":
+                                    changeID();
+                                    break;
+                                case "Name":
+                                    changeName();
+                                    break;
+                            }
+                        })
+            
+                        function changeID() {
+                            connection.query("SELECT * FROM employee_tracker.department", function(err, result, fields) {
+                                if (err) throw err;
+                                console.table(result)
+                            })
+                            setTimeout(function() {
+                                inquirer.prompt({
+                                    name: "newID",
+                                    type: "input",
+                                    message: "What would you like the Department's new ID to be?  It can't match any existing IDs above."
+                                }).then(function({ newID }) {
+                                    connection.query(`UPDATE department SET id=${newID} WHERE id=${selectedID}`, function(err, result, fields) {
+                                        if (err) throw err;
+                                        returnToMainMenu();
+                                    })
+                                })
+                            }, 500)
+                        }
+            
+                        function changeName() {
+                            connection.query(`SELECT * FROM employee_tracker.department WHERE id=${selectedID}`, function(err, result, fields) {
+                                if (err) throw err;
+                                console.table(result)
+                            })
+                            setTimeout(function() {
+                                inquirer.prompt({
+                                    name: "newName",
+                                    type: "input",
+                                    message: "What would you like the Departments new Name to be?"
+                                }).then(function({ newName }) {
+                                    connection.query(`UPDATE department SET name="${newName}" WHERE id=${selectedID}`, function(err, result, fields) {
+                                        if (err) throw err;
+                                        returnToMainMenu();
+                                    })
+                                })
+                            }, 500)
+                        }
+                    })
+                })
+            }
         }
     })
 };
@@ -634,6 +894,7 @@ function createRole() {
     console.log("\nLoading...\n")
 
     connection.query("SELECT * FROM employee_tracker.department", function (err, result, fields) {
+        if (err) throw err;
         if (result[0] == null) {
             inquirer.prompt({
                 name: "answer",
@@ -665,44 +926,44 @@ function createRole() {
                     createRoleFunction();
                 }            
             })
-            
-            function createRoleFunction() {
-                setTimeout(function(){
-                    inquirer.prompt([{
-                        name: "id",
+        }
+    })
+};
+
+function createRoleFunction() {
+    setTimeout(function(){
+        inquirer.prompt([{
+            name: "id",
+            type: "input",
+            message: "What would you like the Role ID to be? (It cannot match any Existing ones)"
+        } , {
+            name: "title",
+            type: "input",
+            message: "What's the Title of this Role?"
+        } , {
+            name: "salary",
+            type: "input",
+            message: "What's the Salary of this Role/Position?"
+        }]).then(function({id, title, salary}) {
+            connection.query("SELECT * FROM employee_tracker.department", function (err, result, fields) {
+                if (err) throw err;
+                console.table(result)
+
+                setTimeout(function() {
+                    inquirer.prompt({
+                        name: "department_id",
                         type: "input",
-                        message: "What would you like the Role ID to be? (It cannot match any Existing ones)"
-                    } , {
-                        name: "title",
-                        type: "input",
-                        message: "What's the Title of this Role?"
-                    } , {
-                        name: "salary",
-                        type: "input",
-                        message: "What's the Salary of this Role/Position?"
-                    }]).then(function({id, title, salary}) {
-                        connection.query("SELECT * FROM employee_tracker.department", function (err, result, fields) {
+                        message: "Based on the Chart above, what's the Department ID that's going to be associated with this Role?"
+                    }).then(function({department_id}) {
+                        connection.query(`INSERT INTO role (id, title, salary, department_id) VALUES (${id}, "${title}", ${salary}, ${department_id});`, function (err, result, fields) {
                             if (err) throw err;
-                            console.table(result)
-    
-                            setTimeout(function() {
-                                inquirer.prompt({
-                                    name: "department_id",
-                                    type: "input",
-                                    message: "Based on the Chart above, what's the Department ID that's going to be associated with this Role?"
-                                }).then(function({department_id}) {
-                                    connection.query("INSERT INTO role (id, title, salary, department_id) VALUES (" + id + ", '" + title + "', " + salary + ", " + department_id + ");", function (err, result, fields) {
-                                        if (err) throw err;
-                                        returnToMainMenu();
-                                    })
-                                })
-                            }, 1000)
+                            returnToMainMenu();
                         })
                     })
                 }, 1000)
-            }
-        }
-    })
+            })
+        })
+    }, 1000)
 };
 
 // -------------------------------------------
@@ -740,27 +1001,27 @@ function createDepartment() {
             console.log("^ Above is a List of Departments that already exist ^") 
             createDepartmentFunction();
         }
-
-        function createDepartmentFunction() {
-            setTimeout(function(){
-                inquirer.prompt([{
-                    name: "id",
-                    type: "input",
-                    message: "What would you like the Department ID to be? (It cannot match any Existing ones)"
-                } , {
-                    name: "name",
-                    type: "input",
-                    message: "What's Name of this Department?"
-                }]).then(function({ id, name }) {
-                    connection.query("INSERT INTO department (id, name) VALUES (" + id + ", '" + name + "');", function (err, result, fields) {
-                        if (err) throw err;
-                        returnToMainMenu();
-                    })
-                })
-            })
-        }
     })  
 };
+
+function createDepartmentFunction() {
+    setTimeout(function(){
+        inquirer.prompt([{
+            name: "id",
+            type: "input",
+            message: "What would you like the Department ID to be? (It cannot match any Existing ones)"
+        } , {
+            name: "name",
+            type: "input",
+            message: "What's Name of this Department?"
+        }]).then(function({ id, name }) {
+            connection.query(`INSERT INTO department (id, name) VALUES (${id}, "${name}");`, function (err, result, fields) {
+                if (err) throw err;
+                returnToMainMenu();
+            })
+        })
+    })
+}
 
 // --------------------------------------------------------
 
