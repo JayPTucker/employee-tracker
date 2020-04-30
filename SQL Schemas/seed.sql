@@ -1,3 +1,6 @@
+
+-- PLEASE READ THE TOP OF SCHEMA.SQL FIRST BEFORE USING THIS FILE
+
 DROP DATABASE IF EXISTS employee_tracker;
 CREATE DATABASE employee_tracker;
 
@@ -47,7 +50,3 @@ VALUES (1, "Mechanic", 3000, 1);
 
 INSERT INTO role (id, title, salary, department_id)
 VALUES (2, "Manager", 1000000, 1);
-
-
-
--- ID, FIRST NAME, LAST NAME, TITLE, DEPARTMENT, SALARY, MANAGER
