@@ -1,5 +1,7 @@
 # Employee Tracker: 
 ![License](https://img.shields.io/badge/License-CCL-brightgreen) 
+
+**YouTube Usage Tutorial: [Click me!](https://youtu.be/K0OIZBlbNAI)** 
  
 **GitHub Repository Link: [Click me!](https://github.com/JayPTucker/employee-tracker)** 
  
