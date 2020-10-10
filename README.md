@@ -5,7 +5,7 @@
  
 **GitHub Repository Link: [Click me!](https://github.com/JayPTucker/employee-tracker)** 
  
-**My Website: [Click me!](https://jayptucker.github.io)** 
+**My Website: [Click me!](https://www.jayptucker.com/)** 
  
 ## 📄 Description: <a name='description'></a> 
 **Updated (4/30/20):**
