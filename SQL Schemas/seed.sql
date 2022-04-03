@@ -26,7 +26,7 @@ CREATE TABLE employee (
     manager_id INTEGER
 );
 
--- DEPARTMENT --
+-- DEPARTMENT --npm
 INSERT INTO department (id, name)
 VALUES (1, "TTT");
 
