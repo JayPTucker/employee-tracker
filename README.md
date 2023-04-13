@@ -1,62 +1,47 @@
-# Employee Tracker: 
-![License](https://img.shields.io/badge/License-CCL-brightgreen) 
+# Employee Tracker
 
-**YouTube Usage Tutorial: [Click me!](https://youtu.be/K0OIZBlbNAI)** 
- 
-**GitHub Repository Link: [Click me!](https://github.com/JayPTucker/employee-tracker)** 
- 
-**My Website: [Click me!](https://www.jayptucker.com/)** 
- 
-## 📄 Description: <a name='description'></a> 
-**Updated (4/30/20):**
+Employee Tracker is a command-line application that allows businesses to manage their employee information. Users can view, add, update, and delete employee records, as well as view and manage department and role information.
 
-Welcome to Employee Tracker!  This Application had about 30+ Hours put into it - It's an Application that allows Business Owners/Managers to Properly Manage and Edit their Employees, Roles, etc through the Terminal and MySQL Database using NodeJS.  You can add Departments, Roles, and Employees as well as edit and delete them at your desire.  Below is a Table of Contents you may use to Navigate to the Instructions on how to Install and use this Application.
- 
-## 📖 Table of Contents: 
-- [Description](#description) 
-- [Installation](#installation) 
-- [Usage](#usage) 
-- [Credits](#credits) 
-- [Screenshots](#screenshots) 
+## Features
 
- 
-## 🔌 Installation: <a name='installation'></a> 
+- View Employees: Users can view a list of all employees, including their names, roles, departments, salaries, and manager information.
+- Add Employees: Users can add new employees to the system, providing their information such as name, role, department, salary, and manager.
+- Update Employees: Users can update existing employee records, including their roles and managers.
+- Delete Employees: Users can delete employees from the system, removing their records from the database.
+- View Departments: Users can view a list of all departments, along with their department IDs.
+- Add Departments: Users can add new departments to the system, providing a department name.
+- View Roles: Users can view a list of all roles, along with their role IDs, salaries, and department information.
+- Add Roles: Users can add new roles to the system, providing a role title, salary, and department.
 
-**Requirements:**
-- [VSCode](https://code.visualstudio.com/)
-- [GitBash](https://git-scm.com/downloads)
-- [NodeJS](https://nodejs.org/en/)
-- [MySQL](https://dev.mysql.com/downloads/windows/installer/8.0.html)
+## Technologies Used
 
-**Installation Steps:**
-1. Clone the file from [my GitHub](https://github.com/JayPTucker)
-2. Put it somewhere you'll remember (Best Choice for Easy Access: In a Folder on your Desktop)
-3. Open GitBash and cd directly into the directory.
-- "cd desktop" > "cd employee-tracker" > Done!
-4. Once you're CD'd inside of the Repository, type "code ." into GitBash and hit Enter.
-5. VSCode should open (Or any other Software you use to code).
-6. Click on the "start.js" file and navigate to the MySQL Server Information Section which should be located near the top.
-7. Then, edit the Information so that it has proper access to your Database.
-8. Right click on the "start.js" and click on "Open in Terminal"
-9. Once your Terminal is open type in:
+- Node.js: A JavaScript runtime environment used for building the command-line application.
+- MySQL: A relational database management system used for storing employee, department, and role information.
+- Inquirer: A popular package for creating interactive command-line prompts in Node.js applications.
+- Console.table: A package for formatting and displaying data in a tabular format in the command-line.
+- JavaScript: The programming language used for building the application's logic.
+- ES6: The latest version of JavaScript with modern syntax and features.
 
-> npm install
+## Installation
 
-10. Wait for the Packages to install, once it's done you should now have a "node_modules" Folder to the left of your screen.
-11. After that, type in "node start.js" into the terminal and hit enter to run the Application
-    - If this doesn't work, you may have not Installed NodeJS or MySQL Properly OR you may have not entered in your Server information Properly.
-12. Done! You should be Welcomed by a Intro Screen and once it is done loading you may now use the Application to your heart's desire.
- 
-## 💻 Usage: <a name='usage'></a> 
- 
-This Application can be used in many different ways.  The Original Intention and Inspiration for creating this project was to allow Business Owners and Managers to properly keep track of their Employees, Company Roles, and Departments.  You may navigate through the Main Menu and see several options, simply hit Enter on any of them and follow the prompts that appear in the Terminal.  If you ever get an error, you may have entered some data in wrong, as most bugs have been worked out in this Application.
- 
-## 👨‍💼 Credits <a name='credits'></a>: 
- 
-<img src="https://avatars0.githubusercontent.com/u/58493507?v=4" width="70" border-radius="100" /></a>
-- [Jay Paul Tucker](https://github.com/JayPTucker)
-If you have any questions, please Email me at: jayptuckerimportant@gmail.com
+1. Clone the repository: `git clone https://github.com/JayPTucker/employee-tracker.git`
+2. Change to the project directory: `cd employee-tracker`
+3. Install dependencies: `npm install`
+4. Set up MySQL database: Create a MySQL database using the provided schema.sql and seed.sql files in the `db` directory. You can use a MySQL client like MySQL Workbench or command-line tools to create and populate the database.
+5. Update database connection: In the `index.js` file, update the `connection` object with your own MySQL database connection details, such as host, port, user, password, and database name.
+6. Start the application: `node index.js`
 
+## Usage
+
+The Employee Tracker application is a command-line application, and users can interact with it through the command-line prompts. Follow the on-screen instructions to perform various operations, such as viewing, adding, updating, or deleting employees, departments, and roles.
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
+
+## Contact
+
+If you have any questions, comments, or suggestions, please feel free to contact me at [jaypaultucker@gmail.com](mailto:jaypaultucker@gmail.com).
  
 ## 📷 Screenshots: <a name='screenshots'></a>
 ![Example](assets/example.gif)
